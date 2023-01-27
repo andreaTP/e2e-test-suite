@@ -3,7 +3,10 @@ package io.managed.services.test.client.kafkamgmt;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.openshift.cloud.api.kas.invoker.ApiClient;
+import com.github.andreatp.kiota.auth.RHAccessTokenProvider;
+import com.microsoft.kiota.authentication.BaseBearerTokenAuthenticationProvider;
+import com.microsoft.kiota.http.OkHttpRequestAdapter;
+import com.openshift.cloud.api.kas.ApiClient;
 import com.openshift.cloud.api.kas.models.Error;
 import com.openshift.cloud.api.kas.models.KafkaRequest;
 import com.openshift.cloud.api.kas.models.KafkaRequestPayload;
@@ -45,7 +48,9 @@ public class KafkaMgmtApiUtils {
     private static final String CLUSTER_CAPACITY_EXHAUSTED_CODE = "KAFKAS-MGMT-24";
 
     public static KafkaMgmtApi kafkaMgmtApi(String uri, KeycloakUser user) {
-        return new KafkaMgmtApi(new ApiClient().setBasePath(uri), user);
+        var adapter = new OkHttpRequestAdapter(new BaseBearerTokenAuthenticationProvider(new RHAccessTokenProvider(user.getAccessToken())));
+        adapter.setBaseUrl(uri);
+        return new KafkaMgmtApi(new ApiClient(adapter), user);
     }
 
     /**
