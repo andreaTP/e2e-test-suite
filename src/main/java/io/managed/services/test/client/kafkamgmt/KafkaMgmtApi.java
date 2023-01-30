@@ -23,8 +23,8 @@ public class KafkaMgmtApi extends BaseApi {
 
     private final ApiClient apiClient;
 
-    public KafkaMgmtApi(ApiClient apiClient, KeycloakUser user) {
-        super(user);
+    public KafkaMgmtApi(ApiClient apiClient) {
+        super();
         this.apiClient = Objects.requireNonNull(apiClient);
     }
 
@@ -48,7 +48,12 @@ public class KafkaMgmtApi extends BaseApi {
     }
 
     public KafkaRequestList getKafkas(String page, String size, String orderBy, String search) throws ApiGenericException {
-        return retry(() -> apiClient.api().kafkas_mgmt().v1().kafkas().get().get(1, TimeUnit.SECONDS));
+        return retry(() -> apiClient.api().kafkas_mgmt().v1().kafkas().get(config -> {
+            config.queryParameters.page = page;
+            config.queryParameters.size = size;
+            config.queryParameters.orderBy = orderBy;
+            config.queryParameters.search = search;
+        }).get(1, TimeUnit.SECONDS));
     }
 
     public KafkaRequest createKafka(Boolean async, KafkaRequestPayload kafkaRequestPayload) throws ApiGenericException {

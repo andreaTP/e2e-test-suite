@@ -41,7 +41,7 @@ import static java.time.Duration.ofSeconds;
 public class KafkaInstanceApiUtils {
 
     public static String kafkaInstanceApiUri(KafkaRequest kafka) {
-        return kafkaInstanceApiUri(kafka.getBootstrapServerHost());
+        return kafkaInstanceApiUri(kafka.getBootstrap_server_host());
     }
 
     public static String kafkaInstanceApiUri(String bootstrapServerHost) {

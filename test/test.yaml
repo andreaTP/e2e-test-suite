@@ -1,0 +1,27 @@
+openapi: 3.0.3
+info:
+  title: Kafka Instance API
+  version: 0.13.0-SNAPSHOT
+paths:
+  /api/v1/topics:
+    get:
+      summary: Retrieves a list of topics
+      operationId: getTopics
+      responses:
+        "423":
+          description: Example.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      allOf:
+      - $ref: '#/components/schemas/ObjectReference'
+    ObjectReference:
+      type: object
+      properties:
+        id:
+          description: Unique identifier.
+          type: string

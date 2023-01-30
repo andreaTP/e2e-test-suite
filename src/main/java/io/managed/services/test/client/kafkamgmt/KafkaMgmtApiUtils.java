@@ -47,10 +47,10 @@ public class KafkaMgmtApiUtils {
     private static final Logger LOGGER = LogManager.getLogger(KafkaMgmtApiUtils.class);
     private static final String CLUSTER_CAPACITY_EXHAUSTED_CODE = "KAFKAS-MGMT-24";
 
-    public static KafkaMgmtApi kafkaMgmtApi(String uri, KeycloakUser user) {
-        var adapter = new OkHttpRequestAdapter(new BaseBearerTokenAuthenticationProvider(new RHAccessTokenProvider(user.getAccessToken())));
+    public static KafkaMgmtApi kafkaMgmtApi(String uri, String offlineToken) {
+        var adapter = new OkHttpRequestAdapter(new BaseBearerTokenAuthenticationProvider(new RHAccessTokenProvider(offlineToken)));
         adapter.setBaseUrl(uri);
-        return new KafkaMgmtApi(new ApiClient(adapter), user);
+        return new KafkaMgmtApi(new ApiClient(adapter));
     }
 
     /**
@@ -78,10 +78,11 @@ public class KafkaMgmtApiUtils {
     }
 
     public static KafkaRequestPayload defaultKafkaInstance(String name) {
-        return new KafkaRequestPayload()
-            .name(name)
-            .cloudProvider(Environment.CLOUD_PROVIDER)
-            .region(Environment.DEFAULT_KAFKA_REGION);
+        var kafkaRequestPayload = new KafkaRequestPayload();
+        kafkaRequestPayload.setName(name);
+        kafkaRequestPayload.setCloud_provider(Environment.CLOUD_PROVIDER);
+        kafkaRequestPayload.setRegion(Environment.DEFAULT_KAFKA_REGION);
+        return kafkaRequestPayload;
     }
 
     /**
@@ -391,7 +392,7 @@ public class KafkaMgmtApiUtils {
     public static void waitUntilKafkaHostsAreResolved(KafkaRequest kafka)
         throws InterruptedException, KafkaUnknownHostsException {
 
-        var bootstrapHost = Objects.requireNonNull(kafka.getBootstrapServerHost());
+        var bootstrapHost = Objects.requireNonNull(kafka.getBootstrap_server_host());
         var bootstrap = bootstrapHost.replaceFirst(":443$", "");
         var broker0 = "broker-0-" + bootstrap;
         var broker1 = "broker-1-" + bootstrap;
@@ -400,7 +401,7 @@ public class KafkaMgmtApiUtils {
         var hosts = new ArrayList<>(List.of(bootstrap, admin, broker0, broker1, broker2));
 
         // if Kafka instance is of type developer it is smaller and does not have broker1 and broker 2
-        if (Objects.requireNonNull(kafka.getInstanceType()).equals("developer")) {
+        if (Objects.requireNonNull(kafka.getInstance_type()).equals("developer")) {
             hosts.removeAll(List.of(broker1, broker2));
         }
 

@@ -14,10 +14,7 @@ import java.util.Objects;
 @Log4j2
 public abstract class BaseApi {
 
-    private final KeycloakUser user;
-
-    protected BaseApi(KeycloakUser user) {
-        this.user = Objects.requireNonNull(user);
+    protected BaseApi() {
     }
 
     /**
@@ -42,20 +39,7 @@ public abstract class BaseApi {
     }
 
     private <A> A handle(ThrowingSupplier<A, Exception> f) throws ApiGenericException {
-
-        // Set the access token before each call because another API could
-        // have renewed it
-        setAccessToken(user.getAccessToken());
-
-        try {
-            return handleException(f);
-        } catch (ApiUnauthorizedException e) {
-            log.debug("renew access token");
-            // Try to renew the access token
-            setAccessToken(user.renewToken().getAccessToken());
-            // and retry
-            return handleException(f);
-        }
+        return handleException(f);
     }
 
     protected <A> A retry(ThrowingSupplier<A, Exception> f) throws ApiGenericException {

@@ -23,9 +23,9 @@ public class ApplicationServicesApi {
     private final RegistryMgmtApi registryMgmtApi;
 
     public ApplicationServicesApi(String basePath, KeycloakUser user) {
-        this.kafkaMgmtApi = KafkaMgmtApiUtils.kafkaMgmtApi(basePath, user);
-        this.securityMgmtApi = SecurityMgmtAPIUtils.securityMgmtApi(basePath, user);
-        this.registryMgmtApi = RegistryMgmtApiUtils.registryMgmtApi(basePath, user);
+        this.kafkaMgmtApi = KafkaMgmtApiUtils.kafkaMgmtApi(basePath, user.getRefreshToken());
+        this.securityMgmtApi = SecurityMgmtAPIUtils.securityMgmtApi(basePath, user.getRefreshToken());
+        this.registryMgmtApi = RegistryMgmtApiUtils.registryMgmtApi(basePath, user.getRefreshToken());
     }
 
     public static ApplicationServicesApi applicationServicesApi(String username, String password) {
